@@ -1,1 +1,41 @@
-console.log('Hello World!');
+const express = require('express');
+const pokemons = require('./mock-pokemon');
+const pokedexRaw = require('./pokedex.json');
+const fs = require('fs');
+
+const app = express();
+const port = 3000;
+
+app.get('/', (req, res) => res.send('Hello Express je change en azeaelive!'));
+
+app.get('/api/pokemons/:id', (req, res) => {
+    const id = parseInt(req.params.id);
+    if (id > pokemons.length) {
+        res.status(404).send('Désolé, nous n’avons pas ce pokémon');
+        return;
+    }
+    const pokemon = pokemons.find(pokemon => pokemon.id === id);
+    res.json(pokemon);
+});
+
+app.get('/api/pokemons', (req, res) => {
+    res.send(`Notre pokedex contient actuellement ${pokemons.length} pokémons`);
+});
+
+
+/* 
+const pokedex = JSON.parse(fs.readFileSync('./pokedex.json', 'utf8'));
+
+app.get('/api/V2/pokemons/:id', (req, res) => {
+    const id = parseInt(req.params.id);
+    if (id > pokedex.length) {
+        res.status(404).send('Désolé, nous n’avons pas ce pokémon');
+        return;
+    }
+    const pokemon = pokedex.pokemon.find(pokemon => parseInt(pokemon.id) === id);
+    console.log(pokemon);
+    res.send(`Vous avez demandé le pokémon n°${id} : ${pokemon.name}`);
+}); */
+
+
+app.listen(port, () => console.log(`Notre appli vient de démarrer sur : http://localhost:${port}`));
