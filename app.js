@@ -1,17 +1,19 @@
 const express = require('express');
-const pokemons = require('./mock-pokemon');
+let pokemons = require('./mock-pokemon');
 const pokedexRaw = require('./pokedex.json');
 const fs = require('fs');
-const { succes } = require('./helper');
+const { succes, getUniqueID } = require('./helper');
 const morgan = require('morgan');
 const favicon = require('serve-favicon');
+const bodyParser = require('body-parser');
 
 const app = express();
 const port = 3000;
 
 app
     .use(favicon(__dirname + '/favicon.ico'))
-    .use(morgan('dev'));
+    .use(morgan('dev'))
+    .use(bodyParser.json());
 
 app.get('/', (req, res) => res.send('Hello Express je change en azeaelive!'));
 
@@ -31,6 +33,30 @@ app.get('/api/pokemons', (req, res) => {
     res.send(succes(message, pokemons));
 });
 
+app.post('/api/pokemons', (req, res) => {
+    const id = getUniqueID(pokemons);
+    const pokemonCreated = {... req.body, ...{id: id, created: new Date()}};
+    pokemons.push(pokemonCreated);
+    const message = `Félicitation, vous avez ajouté le pokémon ${pokemonCreated.name}`;
+    res.status(201).json(succes(message, pokemonCreated));
+});
+
+app.put('/api/pokemons/:id', (req, res) => {
+    const id = parseInt(req.params.id);
+    const pokemonUpdated = {... req.body, id:id };
+    pokemons = pokemons.map(pokemon => {
+        return pokemon.id === id ? pokemonUpdated : pokemon;
+    })
+    const message = `Félicitation, vous avez modifié le pokémon ${pokemonUpdated.name}`;
+    res.status(200).json(succes(message, pokemonUpdated));
+});
+
+app.delete('/api/pokemons/:id', (req, res) => {
+    const id = parseInt(req.params.id);
+    pokemons = pokemons.filter(pokemon => pokemon.id !== id);
+    const message = `Le pokémon avec l'id ${id} a bien été supprimé`;
+    res.status(200).json(succes(message, pokemons));
+});
 
 
 /* 
