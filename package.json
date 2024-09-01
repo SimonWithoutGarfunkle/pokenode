@@ -1,12 +1,15 @@
 {
   "dependencies": {
-    "express": "^4.19.2"
+    "express": "^4.19.2",
+    "serve-favicon": "^2.5.0"
   },
   "name": "pokenode",
   "description": "Tuto Youtube NodeJS Simon Dieny\r https://www.youtube.com/watch?v=NRxzvpdduvQ",
   "version": "1.0.0",
   "main": "app.js",
-  "devDependencies": {},
+  "devDependencies": {
+    "morgan": "^1.10.0"
+  },
   "scripts": {
     "start": "nodemon app"
   },

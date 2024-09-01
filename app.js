@@ -2,9 +2,16 @@ const express = require('express');
 const pokemons = require('./mock-pokemon');
 const pokedexRaw = require('./pokedex.json');
 const fs = require('fs');
+const { succes } = require('./helper');
+const morgan = require('morgan');
+const favicon = require('serve-favicon');
 
 const app = express();
 const port = 3000;
+
+app
+    .use(favicon(__dirname + '/favicon.ico'))
+    .use(morgan('dev'));
 
 app.get('/', (req, res) => res.send('Hello Express je change en azeaelive!'));
 
@@ -15,12 +22,15 @@ app.get('/api/pokemons/:id', (req, res) => {
         return;
     }
     const pokemon = pokemons.find(pokemon => pokemon.id === id);
-    res.json(pokemon);
+    const message = "Un pokémon a bien été trouvé";
+    res.status(200).json(succes(message, pokemon));
 });
 
 app.get('/api/pokemons', (req, res) => {
-    res.send(`Notre pokedex contient actuellement ${pokemons.length} pokémons`);
+    const message = `Notre pokedex contient actuellement ${pokemons.length} pokémons`;
+    res.send(succes(message, pokemons));
 });
+
 
 
 /* 
