@@ -6,7 +6,9 @@ const { succes, getUniqueID } = require('./helper');
 const morgan = require('morgan');
 const favicon = require('serve-favicon');
 const bodyParser = require('body-parser');
-const { Sequelize } = require('sequelize');
+const { Sequelize, DataTypes } = require('sequelize');
+const PokemonModel = require('./src/models/pokemon');
+
 
 const app = express();
 const port = 3000;
@@ -27,6 +29,20 @@ const sequelize = new Sequelize(
 sequelize.authenticate()
     .then(() => console.log('Connexion à la base de données réussie'))
     .catch(err => console.error(`Impossible de se connecter à la base de données: ${err}`));
+
+const Pokemon = PokemonModel(sequelize, DataTypes);
+
+sequelize.sync({ force: true })
+    .then(() => { 
+        console.log('La base de données a été synchronisée')
+        Pokemon.create({
+            name: "Bulbizarre",
+            hp: 25999,
+            cp: 5,
+            picture: "https://assets.pokemon.com/assets/cms2/img/pokedex/detail/001.png",
+            types: ["Plante", "Poison"].join()
+    }).then(bulbizare => console.log(bulbizare.toJSON()))
+});
 
 app
     .use(favicon(__dirname + '/favicon.ico'))
