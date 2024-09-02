@@ -6,9 +6,27 @@ const { succes, getUniqueID } = require('./helper');
 const morgan = require('morgan');
 const favicon = require('serve-favicon');
 const bodyParser = require('body-parser');
+const { Sequelize } = require('sequelize');
 
 const app = express();
 const port = 3000;
+const sequelize = new Sequelize(
+    'pokedex',
+    'root',
+    '',
+    {
+        host: 'localhost',
+        dialect: 'mariadb',
+        dialectOptions: {
+            timezone: 'Etc/GMT-2',
+        },
+        logging: false
+    }
+)
+
+sequelize.authenticate()
+    .then(() => console.log('Connexion à la base de données réussie'))
+    .catch(err => console.error(`Impossible de se connecter à la base de données: ${err}`));
 
 app
     .use(favicon(__dirname + '/favicon.ico'))
@@ -58,20 +76,6 @@ app.delete('/api/pokemons/:id', (req, res) => {
     res.status(200).json(succes(message, pokemons));
 });
 
-
-/* 
-const pokedex = JSON.parse(fs.readFileSync('./pokedex.json', 'utf8'));
-
-app.get('/api/V2/pokemons/:id', (req, res) => {
-    const id = parseInt(req.params.id);
-    if (id > pokedex.length) {
-        res.status(404).send('Désolé, nous n’avons pas ce pokémon');
-        return;
-    }
-    const pokemon = pokedex.pokemon.find(pokemon => parseInt(pokemon.id) === id);
-    console.log(pokemon);
-    res.send(`Vous avez demandé le pokémon n°${id} : ${pokemon.name}`);
-}); */
-
+//const pokedex = JSON.parse(fs.readFileSync('./pokedex.json', 'utf8'));
 
 app.listen(port, () => console.log(`Notre appli vient de démarrer sur : http://localhost:${port}`));
