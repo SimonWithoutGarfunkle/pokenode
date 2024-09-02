@@ -2,10 +2,17 @@ const { Pokemon } = require('../db/sequelize');
 
 module.exports = (app) => {
     app.get('/api/pokemons/:id', (req, res) => {
-        try {Pokemon.findByPk(req.params.id).then(pokemon => {
+        Pokemon.findByPk(req.params.id).then(pokemon => {
+            if (pokemon === null) {
+                const message = `le pokemon demandé n'existe pas`
+                return res.status(404).json({message})
+            }
             const message = 'Le pokémon a bien été récupéré.';
             res.json({message, data: pokemon})
-        })} catch (error) {
-            res.status(404).json({message: 'Le pokémon demandé n\'existe pas.'})
-        }
-    })}
+        })
+        .catch(error => {
+            const message = 'Le pokémon n\'a pas pu être récupéré. Réessayez dans quelques instants.';
+            res.status(500).json({message, data: error})
+        })
+    })
+}
