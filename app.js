@@ -15,6 +15,7 @@ app
     .use(bodyParser.json());
 
 sequelize.initDb();
+console.log('test de vitesse');
 
 require('./src/routes/findAllPokemons')(app);
 require('./src/routes/findPokemonByPk')(app);
